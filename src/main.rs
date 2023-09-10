@@ -5,9 +5,9 @@ use winapi::um::winnt::*;
 use winapi::um::winbase::*;
 use winapi::um::handleapi::*;
 use winapi::um::fileapi::*;
-use std::ptr;
+
 fn main(){
-    let driver_path = "\\\\.\\PROCEXP152"; // The name of the driver, assuming it's in the root directory.
+    let driver_path = "\\\\.\\PROCEXP152";
     let handle = unsafe {
         CreateFileW(
             driver_path.encode_utf16().collect::<Vec<_>>().as_ptr(),
@@ -23,7 +23,8 @@ fn main(){
     if handle == INVALID_HANDLE_VALUE {
         // Handle the error here.
         // Be sure to check GetLastError() for more information.
-        println!("Failed to open the driver handle.");
+        let err = unsafe { winapi::um::errhandlingapi::GetLastError() };
+        println!("Failed to open the driver handle. {:?}", err);
     } else {
         // Successfully opened the driver. You can now send IOCTL commands or perform other actions.
         // Don't forget to close the handle when you're done with it.
